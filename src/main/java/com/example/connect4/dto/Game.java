@@ -27,8 +27,10 @@ public class Game implements Serializable {
 
 	private DiskColor[][] board = new DiskColor[6][7];
 
+	@JsonIgnore
 	private int lastPlayedX = -1;
 
+	@JsonIgnore
 	private int lastPlayedY = -1;
 
 	private GameStatus status = GameStatus.CREATED;
