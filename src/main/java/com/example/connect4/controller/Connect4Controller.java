@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.connect4.dto.Game;
 import com.example.connect4.dto.Response;
+import com.example.connect4.enums.DiskColor;
 import com.example.connect4.enums.GameStatus;
+import com.example.connect4.exceptions.YellowMustBeFirstException;
 import com.example.connect4.service.Connect4Service;
 import com.example.connect4.service.GameService;
 
@@ -29,7 +31,9 @@ public class Connect4Controller {
 
 	@Operation(summary= "start a new game by entering your preffered userId and your color as Request parameters")
 	@GetMapping("/newgame")
-	public Response startNewGame(@RequestParam @NotNull String userId, @RequestParam @NotNull String color) {
+	public Response startNewGame(@RequestParam @NotNull String userId) {
+		String color = DiskColor.YELLOW.toString();
+		System.out.println(color);
 		gameService.validateColor(color);
 		Game game = service.createNewGame(userId, color);
 		Response gameResponse = new Response(game);
@@ -42,7 +46,7 @@ public class Connect4Controller {
 	public Response getGame(@PathVariable @NotNull String gameId) {
 		Game game = service.getGame(gameId);
 		Response gameResponse = new Response(game);
-		gameResponse.setMessage("Game is Retrieved");
+		gameResponse.setMessage("Game retrieval succesful");
 		return gameResponse;
 	}
 
@@ -52,7 +56,7 @@ public class Connect4Controller {
 		Game game = service.joinGame(gameId, userId);
 		Response gameResponse = new Response(game);
 		gameResponse.setMessage(
-				userId + " joined the game " + gameId + " with disc color " + game.getPlayer2().getDiskColor());
+				userId + " has joined the game with gameID " + gameId + " with coin color " + game.getPlayer2().getDiskColor());
 		return gameResponse;
 	}
 
@@ -60,12 +64,16 @@ public class Connect4Controller {
 	@RequestMapping(path = "/playgame/{gameId}/{userId}/{column}", method = RequestMethod.PUT)
 	public Response playGame(@PathVariable @NotNull String gameId, @PathVariable @NotNull String userId,
 			@PathVariable int column) {
+		if(service.getGame(gameId).getLastPlayedX()==-1 && service.getGame(gameId).getLastPlayedY()==-1 && !service.getGame(gameId).getPlayer1().getUserId().equals(userId)) {
+			System.out.println(service.getGame(gameId).getPlayer1().getUserId()+ "   " +userId);
+			throw new YellowMustBeFirstException("Yellow coin must have the first chance");
+		}		
 		if (column < 0 || column > 6) {
 			throw new IllegalArgumentException("Column value should be between 0 and 6");
 		}
 		Game game = service.play(gameId, userId, column);
 		Response gameResponse = new Response(game);
-		gameResponse.setMessage(userId + " put disc on column " + column + " for the game " + gameId);
+		gameResponse.setMessage(userId + " has placed coin on column " + column + " for the gameId " + gameId);
 		if (GameStatus.COMPLETED.equals(game.getStatus())) {
 			gameResponse.setMessage(gameResponse.getMessage() + " User " + userId + " won the game");
 		}

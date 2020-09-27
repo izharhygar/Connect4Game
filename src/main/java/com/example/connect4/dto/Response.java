@@ -13,7 +13,4 @@ public class Response {
 	public Response(Game game) {
 	    this.game=game;
 	  }
-	
-	
-
 }

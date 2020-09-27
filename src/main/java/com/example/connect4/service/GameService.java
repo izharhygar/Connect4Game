@@ -25,7 +25,7 @@ public class GameService {
 		int end = (game.getLastPlayedY() + 3) < 6 ? game.getLastPlayedY() + 3 : 6;
 		int count = 0;
 		for (int i = start; i <= end; i++) {
-			if (getLastPlayedDisc(game).equals(game.getBoard()[game.getLastPlayedY()][i])) {
+			if (getLastPlayedDisc(game).equals(game.getBoard()[game.getLastPlayedX()][i])) {
 				count++;
 				if (count == 4) {
 					return true;
@@ -42,7 +42,7 @@ public class GameService {
 		int end = (game.getLastPlayedX() + 3) < 6 ? game.getLastPlayedX() + 3 : 5;
 		int count = 0;
 		for (int i = start; i <= end; i++) {
-			if (getLastPlayedDisc(game).equals(game.getBoard()[i][game.getLastPlayedX()])) {
+			if (getLastPlayedDisc(game).equals(game.getBoard()[i][game.getLastPlayedY()])) {
 				count++;
 				if (count == 4) {
 					return true;
@@ -143,7 +143,7 @@ public class GameService {
 	      DiskColor.valueOf(color);
 	    } catch (Exception e) {
 	      throw new IllegalArgumentException(
-	          "valid values of color are " + DiskColor.RED + " and " + DiskColor.YELLOW);
+	          "valid values of color are red and yellow");
 	    }
 	  }
 }
